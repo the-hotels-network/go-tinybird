@@ -10,7 +10,7 @@ var NDJSON bool
 // Initialize module.
 func init() {
 	URL_BASE = env.Get("TB_URL_BASE", "https://api.tinybird.co/v0/pipes")
-	NDJSON   = env.GetBool("TB_NDJSON", false)
+	NDJSON = env.GetBool("TB_NDJSON", false)
 }
 
 // Return the URL base.

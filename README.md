@@ -1,8 +1,6 @@
 # Go-Tinybird
----
-A [Tinybird](https://www.tinybird.co/) module for Go
 
-Why need this module? It provides an easy and standard way of getting data through the Tinybird API.
+A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It provides an easy and standard way of getting data through the Tinybird API.
 
 ## Features
 

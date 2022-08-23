@@ -1,28 +1,41 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/the-hotels-network/go-tinybird"
 )
 
 func main() {
-	ws := tinybird.Workspace{
-		Name: "demo",
-		Token: "",
+	params := url.Values{}
+	params.Add("start_date", "2022-05-01")
+	params.Add("end_date", "2022-05-30")
+	params.Add("property_id", "1011163")
+	params.Add("property_id", "1011832")
+	params.Add("property_id", "1011846")
+	params.Add("property_id", "1011847")
+
+	req := tinybird.Request{
+		Method: http.MethodGet,
+		Pipe: tinybird.Pipe{
+			Name:       "ep_quantum_disparities",
+			Parameters: params,
+			Workspace: tinybird.Workspace{
+				Name:  "quantum",
+				Token: os.Getenv("TB_TOKEN"),
+			},
+		},
 	}
 
-	params := url.Values{}
-	params.Add("start_date", "2022-01-01")
-	params.Add("end_date", "2022-01-30")
-
-	ws.Pipes.Add(
-		tinybird.Pipe{
-			Name:"foo",
-			Parameters: params,
-		},
-	)
-
-	pipe := ws.Pipe("foo")
-	pipe.Execute()
+	err := req.Execute()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	res := req.Response
+	fmt.Println("Status:", res.Status)
+	fmt.Println("Data:", res.Data)
 }
