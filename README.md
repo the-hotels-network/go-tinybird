@@ -6,6 +6,8 @@ A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It p
 
 - Lightweight and fast.
 - Native Go implementation. No C-bindings, just pure Go
+- Connection pooling for HTTP.
+- Allow [NDJSON](http://ndjson.org/) between tinybird and this module.
 - Parallelize HTTP requests.
 
 ## Requirements
