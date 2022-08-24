@@ -70,11 +70,7 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 	defer resp.Body.Close()
 
 	r.Response.Status = resp.StatusCode
-
-	if r.Response.Status == http.StatusOK {
-		r.Response.Body, err = io.ReadAll(resp.Body)
-	}
-
+	r.Response.Body, err = io.ReadAll(resp.Body)
 	r.Response.Decode()
 
 	return err

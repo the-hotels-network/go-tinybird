@@ -35,7 +35,9 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	res := req.Response
 	fmt.Println("Status:", res.Status)
+	fmt.Println("Error:", res.Error)
 	fmt.Println("Data:", res.Data)
 }

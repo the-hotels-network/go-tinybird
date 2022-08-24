@@ -9,28 +9,31 @@ import (
 
 // Basic JSON struct for all response by Tinybird.
 type Response struct {
-	Body                   []byte
-	Data                   []Row      `json:"data"`
-	Meta                   []Meta     `json:"meta"`
-	Rows                   uint       `json:"rows"`
-	RowsBeforeLimitAtLeast uint       `json:"rows_before_limit_at_least"`
-	Statistics             Statistics `json:"statistics"`
-	Status                 int
+	Body                   []byte     // Body have original data.
+	Data                   []Row      `json:"data,omitempty"`                       // Data is part a tinybird response.
+	Documentation          string     `json:"documentation,omitempty"`              // Documentation is part a tinybird response.
+	Error                  string     `json:"error,omitempty"`                      // Error is part a tinybird response.
+	Meta                   []Meta     `json:"meta,omitempty"`                       // Meta is part a tinybird response.
+	Rows                   uint       `json:"rows,omitempty"`                       // Rows is part a tinybird response.
+	RowsBeforeLimitAtLeast uint       `json:"rows_before_limit_at_least,omitempty"` // RowsBeforeLimitAtLeast is part a tinybird response.
+	Statistics             Statistics `json:"statistics,omitempty"`                 // Statistics is part a tinybird response.
+	Status                 int        // Status is a HTTP status code, ej: 200, 400, 500 etc...
 }
 
+// Generic row structure to allow any field with any type.
 type Row map[string]interface{}
 
 // Specific field with data type.
 type Meta struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
+	Name string `json:"name,omitempty"`
+	Type string `json:"type,omitempty"`
 }
 
 // Statistics information about the response.
 type Statistics struct {
-	Elapsed   float64 `json:"elapsed"`
-	RowsRead  uint64  `json:"rows_read"`
-	BytesRead uint64  `json:"bytes_read"`
+	Elapsed   float64 `json:"elapsed,omitempty"`
+	RowsRead  uint64  `json:"rows_read,omitempty"`
+	BytesRead uint64  `json:"bytes_read,omitempty"`
 }
 
 // Convert response body to struct.
