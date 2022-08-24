@@ -25,12 +25,12 @@ type HTTPClient interface {
 // Initialize module.
 func init() {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.MaxIdleConns = 100
-	transport.MaxConnsPerHost = 100
-	transport.MaxIdleConnsPerHost = 100
+	transport.MaxIdleConns = MAX_IDLE_CONNS
+	transport.MaxConnsPerHost = MAX_CONNS_PER_HOST
+	transport.MaxIdleConnsPerHost = MAX_IDLE_CONNS_PER_HOST
 
 	Client = &http.Client{
-		Timeout:   time.Duration(30) * time.Second,
+		Timeout:   time.Duration(CONNS_TIMEOUT) * time.Second,
 		Transport: transport,
 	}
 }

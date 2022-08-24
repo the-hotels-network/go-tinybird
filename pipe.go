@@ -16,7 +16,7 @@ type Pipe struct {
 func (p *Pipe) GetURL() string {
 	p.URL = fmt.Sprintf(
 		"%s/%s.%s",
-		URL(),
+		URL_BASE,
 		p.Name,
 		Format(),
 	)

@@ -24,3 +24,15 @@ func GetBool(key string, fallback bool) bool {
 	}
 	return fallback
 }
+
+// Retrieve environment variable in int type.
+func GetInt(key string, fallback int) int {
+	if value, ok := os.LookupEnv(key); ok {
+		b, err := strconv.Atoi(value)
+		if err != nil {
+			return fallback
+		}
+		return b
+	}
+	return fallback
+}
