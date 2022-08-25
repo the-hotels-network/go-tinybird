@@ -37,7 +37,8 @@ func main() {
 	}
 
 	res := req.Response
-	fmt.Println("Status:", res.Status)
+	fmt.Println("Status code:", res.Status)
+	// fmt.Println("Elapsed time:", req.Duration.Elapsed.String())
 	fmt.Println("Error:", res.Error)
 	fmt.Println("Data:", res.Data)
 }
