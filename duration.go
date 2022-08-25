@@ -5,13 +5,21 @@ import (
 	"time"
 )
 
+type Duration time.Duration
+
 // Calculate child function duration.
-func Duration(fn func() error) (string, error) {
+func (d *Duration) Do(fn func() error) error {
 	t1 := time.Now()
 	err := fn()
-	t2 := time.Now()
-	diff := t2.Sub(t1)
-	out := time.Time{}.Add(diff)
 
-	return fmt.Sprint(out.Format("15:04:05.000")), err
+	(*d) = Duration(time.Since(t1))
+
+	return err
+}
+
+func (d Duration) Seconds() string {
+	return fmt.Sprintf(
+		"%.2fs",
+		time.Duration(d).Seconds(),
+	)
 }

@@ -8,10 +8,11 @@ import (
 )
 
 type Request struct {
-	Elapsed  string
-	Method   string
-	Pipe     Pipe
-	Response Response
+	Elapsed  Duration // Elapsed time of client request.
+	Error    error    // Error on client request.
+	Method   string   // Define HTTP method.
+	Pipe     Pipe     // Pipe details.
+	Response Response // Response data.
 }
 
 // Custom HTTP client for this module.
@@ -35,8 +36,9 @@ func init() {
 	}
 }
 
-func (r *Request) Execute() (err error) {
-	r.Elapsed, err = Duration(func() error {
+// Execute request.
+func (r *Request) Execute() error {
+	r.Error = r.Elapsed.Do(func() (err error) {
 		req, err := r.newRequest()
 		if err != nil {
 			return err
@@ -50,9 +52,10 @@ func (r *Request) Execute() (err error) {
 		return r.readBody(res)
 	})
 
-	return err
+	return r.Error
 }
 
+// Create new request.
 func (r *Request) newRequest() (*http.Request, error) {
 	req, err := http.NewRequest(r.Method, r.Pipe.GetURL(), nil)
 	if err != nil {
@@ -66,6 +69,7 @@ func (r *Request) newRequest() (*http.Request, error) {
 	return req, nil
 }
 
+// Read response body from request.
 func (r *Request) readBody(resp *http.Response) (err error) {
 	defer resp.Body.Close()
 
