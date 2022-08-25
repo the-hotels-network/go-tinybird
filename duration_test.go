@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/the-hotels-network/go-tinybird"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDurationElapsed(t *testing.T) {

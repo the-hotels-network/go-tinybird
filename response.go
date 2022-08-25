@@ -39,14 +39,14 @@ type Statistics struct {
 // Convert response body to struct.
 func (r *Response) Decode() error {
 	if Format() == "ndjson" {
-		return r.ndjson()
+		return r.NDJSON()
 	}
 
-	return r.json()
+	return r.JSON()
 }
 
 // Convert body to NDJSON.
-func (r *Response) ndjson() error {
+func (r *Response) NDJSON() error {
 	var count uint
 	var rows []Row
 
@@ -67,6 +67,6 @@ func (r *Response) ndjson() error {
 }
 
 // Convert body to JSON.
-func (r *Response) json() error {
+func (r *Response) JSON() error {
 	return json.Unmarshal(r.Body, &r)
 }
