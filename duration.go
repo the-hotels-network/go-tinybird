@@ -17,6 +17,7 @@ func (d *Duration) Do(fn func() error) error {
 	return err
 }
 
+// Convert duration to seconds unit.
 func (d Duration) Seconds() string {
 	return fmt.Sprintf(
 		"%.2fs",
