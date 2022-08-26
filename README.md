@@ -50,7 +50,6 @@ func main() {
 			Name:       "tinybird_endpoint",
 			Parameters: params,
 			Workspace: tinybird.Workspace{
-				Name:  "demo",
 				Token: "token-demo",
 			},
 		},
