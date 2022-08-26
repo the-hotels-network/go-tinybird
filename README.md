@@ -19,7 +19,7 @@ Go 1.13 or higher. We aim to support the 3 latest versions of Go.
 Simple install the package to your $GOPATH with the go tool from shell:
 
 ```bash
-$ go get -u github.com/the-hotels-network/go-tinybird
+go get -u github.com/the-hotels-network/go-tinybird
 ```
 
 Make sure Git is installed on your machine and in your system's PATH.
@@ -70,3 +70,9 @@ func main() {
 ```
 
 To see more examples, please go to [this directory](https://github.com/the-hotels-network/go-tinybird/tree/main/example).
+
+## Run the test
+
+```
+make tests
+```
