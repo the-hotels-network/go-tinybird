@@ -28,6 +28,7 @@ func main() {
 				Token: os.Getenv("TB_TOKEN"),
 			},
 		},
+		NewLineDelimitedJSON: true,
 	}
 
 	err := req.Execute()
