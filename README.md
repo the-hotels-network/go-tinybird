@@ -9,6 +9,7 @@ A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It p
 - Connection pooling for HTTP.
 - Allow [NDJSON](http://ndjson.org/) between tinybird and this module.
 - Parallelize HTTP requests.
+- Shared logger with [logrus](https://github.com/sirupsen/logrus).
 
 ## Requirements
 

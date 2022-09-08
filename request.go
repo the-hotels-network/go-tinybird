@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/the-hotels-network/go-tinybird/internal/env"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Request struct {
@@ -65,6 +67,11 @@ func (r *Request) newRequest() (*http.Request, error) {
 		return nil, err
 	}
 
+	log.WithFields(log.Fields{
+		"http-message-type": "request",
+		"uri":               r.URI(),
+	}).Debug("tinybird")
+
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.Pipe.Workspace.Token))
 	req.URL.RawQuery = r.Pipe.Parameters.Encode()
@@ -80,6 +87,12 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 	r.Response.Status = resp.StatusCode
 	r.Response.Body, err = io.ReadAll(resp.Body)
 	r.Response.Decode()
+
+	log.WithFields(log.Fields{
+		"http-message-type": "response",
+		"uri":               r.URI(),
+		"status":            r.Response.Status,
+	}).Debug("tinybird")
 
 	return err
 }
@@ -107,4 +120,9 @@ func (r *Request) Format() string {
 	}
 
 	return "json"
+}
+
+// Return concatened URL and Query String to generate a URI.
+func (r *Request) URI() string {
+	return fmt.Sprintf("%s?%s", r.URL(), r.Pipe.Parameters.Encode())
 }
