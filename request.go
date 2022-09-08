@@ -5,14 +5,17 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/the-hotels-network/go-tinybird/internal/env"
 )
 
 type Request struct {
-	Elapsed  Duration // Elapsed time of client request.
-	Error    error    // Error on client request.
-	Method   string   // Define HTTP method.
-	Pipe     Pipe     // Pipe details.
-	Response Response // Response data.
+	Elapsed              Duration // Elapsed time of client request.
+	Error                error    // Error on client request.
+	Method               string   // Define HTTP method.
+	Pipe                 Pipe     // Pipe details.
+	Response             Response // Response data.
+	NewLineDelimitedJSON bool     // Enable NewLine-Delimited JSON.
 }
 
 // Custom HTTP client for this module.
@@ -57,7 +60,7 @@ func (r *Request) Execute() error {
 
 // Create new request.
 func (r *Request) newRequest() (*http.Request, error) {
-	req, err := http.NewRequest(r.Method, r.Pipe.GetURL(), nil)
+	req, err := http.NewRequest(r.Method, r.URL(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -73,9 +76,35 @@ func (r *Request) newRequest() (*http.Request, error) {
 func (r *Request) readBody(resp *http.Response) (err error) {
 	defer resp.Body.Close()
 
+	r.Response.NewLineDelimitedJSON = r.NewLineDelimitedJSON
 	r.Response.Status = resp.StatusCode
 	r.Response.Body, err = io.ReadAll(resp.Body)
 	r.Response.Decode()
 
 	return err
+}
+
+// Build and return the pipe URL.
+func (r *Request) URL() string {
+	r.Pipe.URL = fmt.Sprintf(
+		"%s/%s.%s",
+		URL_BASE,
+		r.Pipe.Name,
+		r.Format(),
+	)
+
+	return r.Pipe.URL
+}
+
+// Verify the variable NewLineDelimitedJSON  value to return json or ndjson.
+func (r *Request) Format() string {
+	if r.NewLineDelimitedJSON {
+		return "ndjson"
+	}
+
+	if env.GetBool("TB_NDJSON", false) {
+		return "ndjson"
+	}
+
+	return "json"
 }

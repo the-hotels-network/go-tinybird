@@ -24,6 +24,12 @@ go get -u github.com/the-hotels-network/go-tinybird
 
 Make sure Git is installed on your machine and in your system's PATH.
 
+## Configure
+
+### NDJSON - Newline-delimited JSON
+
+You can configure it by environment variable `TB_NDJSON` or pipe. By default NDJSON is disabled. Please see this [example to enable via pipe](https://github.com/the-hotels-network/go-tinybird/tree/main/example/request_with_ndjson).
+
 ## Quickstart
 
 ```
