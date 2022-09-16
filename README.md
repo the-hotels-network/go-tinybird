@@ -13,7 +13,7 @@ A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It p
 
 ## Requirements
 
-Go 1.13 or higher. We aim to support the 3 latest versions of Go.
+Go 1.18 or higher.
 
 ## Installation
 

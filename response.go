@@ -22,7 +22,7 @@ type Response struct {
 }
 
 // Generic row structure to allow any field with any type.
-type Row map[string]interface{}
+type Row map[string]any
 
 // Specific field with data type.
 type Meta struct {
