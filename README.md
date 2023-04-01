@@ -77,7 +77,7 @@ func main() {
 
 To see more examples, please go to [this directory](https://github.com/the-hotels-network/go-tinybird/tree/main/example).
 
-## Run the test
+## Tests
 
 ```
 make tests

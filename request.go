@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Basic request struct.
 type Request struct {
 	Elapsed              Duration // Elapsed time of client request.
 	Error                error    // Error on client request.
@@ -23,7 +24,7 @@ type Request struct {
 // Custom HTTP client for this module.
 var Client HTTPClient
 
-// HTTPClient interface
+// HTTPClient interface.
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
