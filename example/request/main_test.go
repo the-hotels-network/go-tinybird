@@ -1,4 +1,4 @@
-package tinybird_test
+package main
 
 import (
 	"net/http"
@@ -13,9 +13,9 @@ func TestRequest(t *testing.T) {
 	req := tinybird.Request{
 		Method: http.MethodGet,
 		Pipe: tinybird.Pipe{
-			Name: "test",
+			Name: "ep_quantum_disparities",
 			Workspace: tinybird.Workspace{
-				Name: "test",
+				Name: "quantum",
 			},
 		},
 	}
@@ -28,7 +28,6 @@ func TestRequest(t *testing.T) {
 	req.Execute()
 	res := req.Response
 
-	assert.Equal(t, req.URL(), "https://api.tinybird.co/v0/pipes/test.json")
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))

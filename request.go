@@ -2,7 +2,6 @@ package tinybird
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -86,8 +85,8 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 
 	r.Response.NewLineDelimitedJSON = r.NewLineDelimitedJSON
 	r.Response.Status = resp.StatusCode
-	r.Response.Body, err = io.ReadAll(resp.Body)
-	r.Response.Decode()
+	r.Response.Body = resp.Body
+	err = r.Response.Decode()
 
 	log.WithFields(log.Fields{
 		"http-message-type": "response",
