@@ -99,14 +99,19 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 
 // Build and return the pipe URL.
 func (r *Request) URL() string {
-	r.Pipe.URL = fmt.Sprintf(
+	var baseUrl string
+	if r.Pipe.URL != "" {
+		baseUrl = r.Pipe.URL
+	} else {
+		baseUrl = URL_BASE
+	}
+
+	return fmt.Sprintf(
 		"%s/%s.%s",
-		URL_BASE,
+		baseUrl,
 		r.Pipe.Name,
 		r.Format(),
 	)
-
-	return r.Pipe.URL
 }
 
 // Verify the variable NewLineDelimitedJSON  value to return json or ndjson.
