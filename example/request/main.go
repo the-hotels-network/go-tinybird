@@ -41,4 +41,5 @@ func main() {
 	fmt.Println("Elapsed time:", req.Elapsed)
 	fmt.Println("Error:", res.Error)
 	fmt.Println("Data:", res.Data)
+	fmt.Println("URL:", req.URI())
 }

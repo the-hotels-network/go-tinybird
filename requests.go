@@ -13,6 +13,16 @@ func (rs *Requests) Add(i Request) {
 	*rs = append(*rs, i)
 }
 
+// Recover specific request by pipe.
+func (rs *Requests) Get(workspace, pipe string) Request {
+	for _, r := range *rs {
+		if r.Pipe.Workspace.Name == workspace && r.Pipe.Name == pipe {
+			return r
+		}
+	}
+	return Request{}
+}
+
 // Execute multithreading/parallel request.
 func (rs *Requests) Execute() {
 	wg := sync.WaitGroup{}
