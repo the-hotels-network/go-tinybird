@@ -49,7 +49,7 @@ func (r *Request) Execute() error {
 		r.Before = func(*Request) bool { return true }
 	}
 	if r.After == nil {
-		r.After = func(*Request){}
+		r.After = func(*Request) {}
 	}
 
 	r.Error = r.Elapsed.Do(func() (err error) {
