@@ -12,12 +12,14 @@ import (
 
 // Basic request struct.
 type Request struct {
-	Elapsed              Duration // Elapsed time of client request.
-	Error                error    // Error on client request.
-	Method               string   // Define HTTP method.
-	Pipe                 Pipe     // Pipe details.
-	Response             Response // Response data.
-	NewLineDelimitedJSON bool     // Enable NewLine-Delimited JSON.
+	Elapsed              Duration            // Elapsed time of client request.
+	Error                error               // Error on client request.
+	Method               string              // Define HTTP method.
+	Pipe                 Pipe                // Pipe details.
+	Response             Response            // Response data.
+	NewLineDelimitedJSON bool                // Enable NewLine-Delimited JSON.
+	Before               func(*Request) bool // Run before execute request.
+	After                func(*Request)      // Run after execute request.
 }
 
 // Custom HTTP client for this module.
@@ -43,18 +45,29 @@ func init() {
 
 // Execute request.
 func (r *Request) Execute() error {
+	if r.Before == nil {
+		r.Before = func(*Request) bool { return true }
+	}
+	if r.After == nil {
+		r.After = func(*Request){}
+	}
+
 	r.Error = r.Elapsed.Do(func() (err error) {
-		req, err := r.newRequest()
-		if err != nil {
-			return err
-		}
+		if r.Before(r) {
+			req, err := r.newRequest()
+			if err != nil {
+				return err
+			}
 
-		res, err := Client.Do(req)
-		if err != nil {
-			return err
-		}
+			res, err := Client.Do(req)
+			if err != nil {
+				return err
+			}
 
-		return r.readBody(res)
+			err = r.readBody(res)
+		}
+		r.After(r)
+		return err
 	})
 
 	return r.Error

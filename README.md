@@ -10,6 +10,7 @@ A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It p
 - Test your code with mocks.
 - Allow [NDJSON](http://ndjson.org/) between tinybird and this module.
 - Parallelize HTTP requests.
+- Add custom logic `after` and `before` execute request. For example a cache system.
 - Shared logger with [logrus](https://github.com/sirupsen/logrus).
 
 ## Requirements
