@@ -87,7 +87,7 @@ func (r *Request) newRequest() (*http.Request, error) {
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.Pipe.Workspace.Token))
-	req.URL.RawQuery = r.Pipe.Parameters.Encode()
+	req.URL.RawQuery = r.Pipe.GetParameters()
 
 	return req, nil
 }
@@ -142,5 +142,5 @@ func (r *Request) Format() string {
 
 // Return concatened URL and Query String to generate a URI.
 func (r *Request) URI() string {
-	return fmt.Sprintf("%s?%s", r.URL(), r.Pipe.Parameters.Encode())
+	return fmt.Sprintf("%s?%s", r.URL(), r.Pipe.GetParameters())
 }

@@ -2,6 +2,7 @@ package tinybird
 
 import (
 	"net/url"
+	"strings"
 )
 
 // Pipe is a object on tinybird, contains one or more SQL queries (Nodes) that
@@ -16,4 +17,15 @@ type Pipe struct {
 	// Is an area that contains a set of Tinybird resources, including Pipes,
 	// Nodes, APIs, Data Sources & Auth Tokens. Define by user.
 	Workspace Workspace
+}
+
+func (p *Pipe) GetParameters() string {
+	for key, value := range p.Parameters {
+		if len(value) > 1 {
+			p.Parameters.Del(key)
+			p.Parameters.Add(key, strings.Join(value, ","))
+		}
+	}
+
+	return p.Parameters.Encode()
 }
