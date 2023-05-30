@@ -3,6 +3,7 @@ package tinybird
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/the-hotels-network/go-tinybird/internal/env"
@@ -142,5 +143,6 @@ func (r *Request) Format() string {
 
 // Return concatened URL and Query String to generate a URI.
 func (r *Request) URI() string {
-	return fmt.Sprintf("%s?%s", r.URL(), r.Pipe.GetParameters())
+	qs, _ := url.QueryUnescape(r.Pipe.GetParameters())
+	return fmt.Sprintf("%s?%s", r.URL(), qs)
 }
