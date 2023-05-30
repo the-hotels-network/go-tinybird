@@ -12,7 +12,7 @@ import (
 
 func TestJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.Body = io.NopCloser(bytes.NewReader([]byte(`{
+	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{
     "meta": [
         {
             "name": "val1",
@@ -76,7 +76,7 @@ func TestJSON(t *testing.T) {
 
 func TestBodyError(t *testing.T) {
 	res := tinybird.Response{}
-	res.Body = io.NopCloser(bytes.NewReader([]byte(`{
+	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{
     "documentation": "https://docs.tinybird.co/api-reference/pipe-api.html",
     "error": "[Error] Missing columns: 'a' while processing query: 'SELECT a, b, c FROM test'"
 }`)))
@@ -93,7 +93,7 @@ func TestBodyError(t *testing.T) {
 
 func TestBodyMalformedJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.Body = io.NopCloser(bytes.NewReader([]byte(`{"error: ""}`)))
+	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{"error: ""}`)))
 
 	err := res.Decode()
 

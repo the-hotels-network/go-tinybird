@@ -98,7 +98,7 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 
 	r.Response.NewLineDelimitedJSON = r.NewLineDelimitedJSON
 	r.Response.Status = resp.StatusCode
-	r.Response.Body = resp.Body
+	r.Response.Raw = resp.Body
 	err = r.Response.Decode()
 
 	log.WithFields(log.Fields{

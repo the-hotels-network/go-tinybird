@@ -2,6 +2,7 @@ package tinybird
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 
 	"github.com/olivere/ndjson"
@@ -9,7 +10,8 @@ import (
 
 // Basic JSON struct for all response by Tinybird.
 type Response struct {
-	Body                   io.ReadCloser // Body with the original data.
+	Raw                    io.ReadCloser // Raw is the original data from response.
+	Body                   string        // Body in string format, same a Data but in struct format and Raw in original format.
 	Data                   []Row         `json:"data,omitempty"`                       // Data is part a tinybird response.
 	Documentation          string        `json:"documentation,omitempty"`              // Documentation is part a tinybird response.
 	Error                  string        `json:"error,omitempty"`                      // Error is part a tinybird response.
@@ -51,7 +53,7 @@ func (r *Response) NDJSON() error {
 	var count uint
 	var rows []Row
 
-	ndjsonReader := ndjson.NewReader(r.Body)
+	ndjsonReader := ndjson.NewReader(r.Raw)
 	for ndjsonReader.Next() {
 		var row Row
 		if err := ndjsonReader.Decode(&row); err != nil {
@@ -69,9 +71,15 @@ func (r *Response) NDJSON() error {
 
 // Convert body to JSON.
 func (r *Response) JSON() error {
-	body, err := io.ReadAll(r.Body)
+	if r.Raw == nil {
+		return errors.New("Raw is empty")
+	}
+
+	body, err := io.ReadAll(r.Raw)
 	if err != nil {
 		return err
 	}
+	r.Body = string(body)
+
 	return json.Unmarshal([]byte(body), &r)
 }

@@ -11,8 +11,8 @@ import (
 
 func main() {
 	params := url.Values{}
-	params.Add("start_date", "2022-05-01")
-	params.Add("end_date", "2022-05-30")
+	params.Add("start_date", "2023-05-01")
+	params.Add("end_date", "2023-05-29")
 	params.Add("property_id", "1011163")
 	params.Add("property_id", "1011832")
 	params.Add("property_id", "1011846")
