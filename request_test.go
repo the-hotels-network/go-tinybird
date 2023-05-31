@@ -67,7 +67,7 @@ func TestNDJSON(t *testing.T) {
 
 	// Case 1
 	r = tinybird.Request{
-		Pipe: tinybird.Pipe {
+		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
@@ -78,7 +78,7 @@ func TestNDJSON(t *testing.T) {
 	t.Setenv("TB_NDJSON", "true")
 
 	r = tinybird.Request{
-		Pipe: tinybird.Pipe {
+		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
@@ -89,7 +89,7 @@ func TestNDJSON(t *testing.T) {
 	t.Setenv("TB_NDJSON", "false")
 
 	r = tinybird.Request{
-		Pipe: tinybird.Pipe {
+		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
@@ -101,7 +101,7 @@ func TestNDJSON(t *testing.T) {
 
 	r = tinybird.Request{
 		NewLineDelimitedJSON: true,
-		Pipe: tinybird.Pipe {
+		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
@@ -113,7 +113,7 @@ func TestNDJSON(t *testing.T) {
 
 	r = tinybird.Request{
 		NewLineDelimitedJSON: false,
-		Pipe: tinybird.Pipe {
+		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
