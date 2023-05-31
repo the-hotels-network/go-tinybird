@@ -135,6 +135,10 @@ func (r *Request) Format() string {
 	}
 
 	if env.GetBool("TB_NDJSON", false) {
+		if r.NewLineDelimitedJSON == false {
+			return "json"
+		}
+
 		return "ndjson"
 	}
 
