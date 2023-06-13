@@ -11,6 +11,10 @@ help: ## Show this help.
 tests: ## Run the tests of the project.
 	go test ./... -v
 
+coverage: ## Generate code coverage
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage-report.html
+
 deps: ## Download dependencies
 	go mod tidy
 	go mod download
