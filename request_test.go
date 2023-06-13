@@ -2,6 +2,7 @@ package tinybird_test
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/the-hotels-network/go-tinybird"
@@ -60,6 +61,40 @@ func TestRequestWithCustomURL(t *testing.T) {
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
 	assert.Equal(t, res.Data, []tinybird.Row{{"Col1": "1", "Col2": float64(2)}})
+}
+
+func TestRequestWithRequestParamInspect(t *testing.T) {
+	params := url.Values{}
+	params.Add("start_date", "2023-05-01")
+	params.Add("end_date", "2023-05-31")
+	params.Add("currency", "EUR")
+
+	req := tinybird.Request{
+		Method: http.MethodGet,
+		Pipe: tinybird.Pipe{
+			Name:       "test",
+			Parameters: params,
+			Workspace: tinybird.Workspace{
+				Name: "test",
+			},
+		},
+	}
+
+	tinybird.MockResponseWithRequestInspect(
+		http.StatusOK,
+		`{"data":[{"Col1": "1", "Col2": 2}],"rows":1,"statistics":{"elapsed":0.00091042,"rows_read": 4,"bytes_read": 296}}`,
+		func(r *http.Request) {
+			assert.Contains(t, r.URL.String(), "start_date=2023-05-01")
+			assert.Contains(t, r.URL.String(), "end_date=2023-05-31")
+			assert.Contains(t, r.URL.String(), "currency=EUR")
+		},
+	)
+
+	req.Execute()
+	res := req.Response
+
+	assert.Nil(t, req.Error)
+	assert.Equal(t, res.Status, http.StatusOK)
 }
 
 func TestNDJSON(t *testing.T) {
