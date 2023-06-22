@@ -23,6 +23,10 @@ func TestGetBool(t *testing.T) {
 	t.Setenv("TB_TEST_GET", "true")
 	e = env.GetBool("TB_TEST_GET", false)
 	assert.Equal(t, e, true)
+
+	t.Setenv("TB_TEST_GET", "asdf")
+	e = env.GetBool("TB_TEST_GET", false)
+	assert.Equal(t, e, false)
 }
 
 func TestGetInt(t *testing.T) {
@@ -32,4 +36,8 @@ func TestGetInt(t *testing.T) {
 	t.Setenv("TB_TEST_GET", "3")
 	e = env.GetInt("TB_TEST_GET", 1)
 	assert.Equal(t, e, 3)
+
+	t.Setenv("TB_TEST_GET", "a")
+	e = env.GetInt("TB_TEST_GET", 1)
+	assert.Equal(t, e, 1)
 }
