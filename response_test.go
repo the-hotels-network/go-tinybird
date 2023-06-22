@@ -1,8 +1,8 @@
 package tinybird_test
 
 import (
-	"bytes"
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/the-hotels-network/go-tinybird"
@@ -12,7 +12,7 @@ import (
 
 func TestJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{
+	res.Raw = io.NopCloser(strings.NewReader(`{
     "meta": [
         {
             "name": "val1",
@@ -61,25 +61,40 @@ func TestJSON(t *testing.T) {
         "rows_read": 61572,
         "bytes_read": 6521888
     }
-}`)))
+}`))
 
 	err := res.Decode()
 
+	assert.Nil(t, err)
 	assert.Empty(t, res.Documentation)
 	assert.Empty(t, res.Error)
 	assert.Equal(t, res.Rows, uint(1))
 	assert.Equal(t, res.RowsBeforeLimitAtLeast, uint(1))
 	assert.Len(t, res.Meta, 7)
-	assert.Nil(t, err)
 	assert.NotEmpty(t, res.Statistics)
+}
+
+func TestResponseNDJSON(t *testing.T) {
+	res := tinybird.Response{}
+	res.NewLineDelimitedJSON = true
+	res.Raw = io.NopCloser(
+		strings.NewReader(`{"ulid":"01H3HT0D3QG3CQRMH1SB0KKPXT","value1":12345,"value2":true,"value3":12.34}
+{"ulid":"01H3HT1JB0B12QTGKH2K599B5K","value1":6543,"value2":null,"value3":99.112}`),
+	)
+
+	err := res.Decode()
+
+	assert.Nil(t, err)
+	assert.Equal(t, res.Rows, uint(2))
+	assert.Len(t, res.Data, 2)
 }
 
 func TestBodyError(t *testing.T) {
 	res := tinybird.Response{}
-	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{
+	res.Raw = io.NopCloser(strings.NewReader(`{
     "documentation": "https://docs.tinybird.co/api-reference/pipe-api.html",
     "error": "[Error] Missing columns: 'a' while processing query: 'SELECT a, b, c FROM test'"
-}`)))
+}`))
 
 	err := res.Decode()
 
@@ -93,9 +108,28 @@ func TestBodyError(t *testing.T) {
 
 func TestBodyMalformedJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.Raw = io.NopCloser(bytes.NewReader([]byte(`{"error: ""}`)))
+	res.Raw = io.NopCloser(strings.NewReader(`{"error: ""}`))
 
 	err := res.Decode()
 
 	assert.NotEmpty(t, err)
+}
+
+func TestRawIsEmpty(t *testing.T) {
+	res := tinybird.Response{}
+
+	err := res.Decode()
+
+	assert.NotNil(t, err)
+	assert.Equal(t, "Raw is empty", err.Error())
+}
+
+func TestErrorOnDecodeNDJSON(t *testing.T) {
+	res := tinybird.Response{}
+	res.NewLineDelimitedJSON = true
+	res.Raw = io.NopCloser(strings.NewReader(`{no-ndjson :(`))
+
+	err := res.Decode()
+
+	assert.NotNil(t, err)
 }
