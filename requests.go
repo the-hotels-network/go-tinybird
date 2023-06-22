@@ -26,7 +26,7 @@ func (rs *Requests) Get(workspace, pipe string) Request {
 // Execute multithreading/parallel request.
 func (rs *Requests) Execute() {
 	wg := sync.WaitGroup{}
-	for index, _ := range *rs {
+	for index := range *rs {
 		wg.Add(1)
 		go func(i int) {
 			(*rs)[i].Execute()
@@ -43,5 +43,6 @@ func (rs Requests) Duration() Duration {
 	for _, r := range rs {
 		d += time.Duration(r.Elapsed)
 	}
+
 	return Duration(d)
 }

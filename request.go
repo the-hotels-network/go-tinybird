@@ -135,7 +135,7 @@ func (r *Request) Format() string {
 	}
 
 	if env.GetBool("TB_NDJSON", false) {
-		if r.NewLineDelimitedJSON == false {
+		if !r.NewLineDelimitedJSON {
 			return "json"
 		}
 
