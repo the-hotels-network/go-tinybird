@@ -13,11 +13,11 @@ import (
 func TestDurationElapsed(t *testing.T) {
 	var d tinybird.Duration
 	d.Do(func() error {
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 		return errors.New("Test")
 	})
 
-	assert.Equal(t, d.Seconds()[0:3], "3.0")
+	assert.Equal(t, d.Seconds()[0:3], "1.0")
 }
 
 func TestDurationError(t *testing.T) {
