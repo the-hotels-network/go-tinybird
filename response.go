@@ -50,21 +50,16 @@ func (r *Response) Decode() error {
 
 // Convert body to NDJSON.
 func (r *Response) NDJSON() error {
-	var count uint
-	var rows []Row
-
 	ndjsonReader := ndjson.NewReader(r.Raw)
 	for ndjsonReader.Next() {
 		var row Row
 		if err := ndjsonReader.Decode(&row); err != nil {
 			return err
 		}
-		rows = append(rows, row)
-		count++
-	}
 
-	r.Data = rows
-	r.Rows = count
+		r.Data = append(r.Data, row)
+		r.Rows++
+	}
 
 	return nil
 }
@@ -81,5 +76,5 @@ func (r *Response) JSON() error {
 	}
 	r.Body = string(body)
 
-	return json.Unmarshal([]byte(body), &r)
+	return json.Unmarshal(body, &r)
 }

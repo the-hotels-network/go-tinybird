@@ -18,14 +18,3 @@ func init() {
 	MAX_IDLE_CONNS_PER_HOST = env.GetInt("TB_MAX_IDLE_CONNS_PER_HOST", 100)
 	CONNS_TIMEOUT = env.GetInt("TB_CONNS_TIMEOUT", 30)
 }
-
-// Return the JSON format response.
-func Format() string {
-	NDJSON := env.GetBool("TB_NDJSON", false)
-
-	if NDJSON {
-		return "ndjson"
-	}
-
-	return "json"
-}
