@@ -23,6 +23,15 @@ func (rs *Requests) Get(workspace, pipe string) Request {
 	return Request{}
 }
 
+func (rs *Requests) GetByAlias(workspace, pipe, alias string) Request {
+	for _, r := range *rs {
+		if r.Pipe.Workspace.Name == workspace && r.Pipe.Name == pipe && r.Pipe.Alias == alias {
+			return r
+		}
+	}
+	return Request{}
+}
+
 // Execute multithreading/parallel request.
 func (rs *Requests) Execute() {
 	wg := sync.WaitGroup{}

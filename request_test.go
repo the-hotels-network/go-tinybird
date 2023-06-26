@@ -14,7 +14,8 @@ func TestRequest(t *testing.T) {
 	req := tinybird.Request{
 		Method: http.MethodGet,
 		Pipe: tinybird.Pipe{
-			Name: "test",
+			Name:  "ep_test",
+			Alias: "test",
 			Workspace: tinybird.Workspace{
 				Name: "test",
 			},
@@ -29,7 +30,7 @@ func TestRequest(t *testing.T) {
 	req.Execute()
 	res := req.Response
 
-	assert.Equal(t, req.URL(), "https://api.tinybird.co/v0/pipes/test.json")
+	assert.Equal(t, req.URL(), "https://api.tinybird.co/v0/pipes/ep_test.json")
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
@@ -40,8 +41,9 @@ func TestRequestWithCustomURL(t *testing.T) {
 	req := tinybird.Request{
 		Method: http.MethodGet,
 		Pipe: tinybird.Pipe{
-			Name: "test",
-			URL:  "https://api.us-east.tinybird.co/v0/pipes",
+			Name:  "ep_test",
+			Alias: "test",
+			URL:   "https://api.us-east.tinybird.co/v0/pipes",
 			Workspace: tinybird.Workspace{
 				Name: "test",
 			},
@@ -56,7 +58,7 @@ func TestRequestWithCustomURL(t *testing.T) {
 	req.Execute()
 	res := req.Response
 
-	assert.Equal(t, req.URL(), "https://api.us-east.tinybird.co/v0/pipes/test.json")
+	assert.Equal(t, req.URL(), "https://api.us-east.tinybird.co/v0/pipes/ep_test.json")
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))

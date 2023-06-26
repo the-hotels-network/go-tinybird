@@ -20,6 +20,7 @@ func TestGetParameters(t *testing.T) {
 
 	p := tinybird.Pipe{
 		Name:       "ep_test",
+		Alias:      "test",
 		Parameters: params,
 		Workspace: tinybird.Workspace{
 			Name: "test",
