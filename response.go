@@ -10,6 +10,7 @@ import (
 
 // Basic JSON struct for all response by Tinybird.
 type Response struct {
+	Cached                 bool          // Flag control to use to determine the origin this response.
 	Raw                    io.ReadCloser // Raw is the original data from response.
 	Body                   string        // Body in string format, same a Data but in struct format and Raw in original format.
 	Data                   []Row         `json:"data,omitempty"`                       // Data is part a tinybird response.

@@ -22,7 +22,7 @@ func newRequest(workspaceName, pipeName, alias, responseData string) tinybird.Re
 				Body: responseData,
 			}
 
-			return false
+			return true
 		},
 	}
 }

@@ -47,14 +47,14 @@ func init() {
 // Execute request.
 func (r *Request) Execute() error {
 	if r.Before == nil {
-		r.Before = func(*Request) bool { return true }
+		r.Before = func(*Request) bool { return false }
 	}
 	if r.After == nil {
 		r.After = func(*Request) {}
 	}
 
 	r.Error = r.Elapsed.Do(func() (err error) {
-		if r.Before(r) {
+		if !r.Before(r) {
 			req, err := r.newRequest()
 			if err != nil {
 				return err
