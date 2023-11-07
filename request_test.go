@@ -109,7 +109,7 @@ func TestNDJSON(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, r.Format(), "json")
+	assert.Equal(t, r.GetFormat(), "json")
 
 	// Case 2
 	t.Setenv("TB_NDJSON", "true")
@@ -120,7 +120,7 @@ func TestNDJSON(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, r.Format(), "json")
+	assert.Equal(t, r.GetFormat(), "ndjson")
 
 	// Case 3
 	t.Setenv("TB_NDJSON", "false")
@@ -131,29 +131,29 @@ func TestNDJSON(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, r.Format(), "json")
+	assert.Equal(t, r.GetFormat(), "json")
 
 	// Case 4
 	t.Setenv("TB_NDJSON", "false")
 
 	r = tinybird.Request{
-		NewLineDelimitedJSON: true,
+		Format: tinybird.JSON,
 		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
 
-	assert.Equal(t, r.Format(), "ndjson")
+	assert.Equal(t, r.GetFormat(), "json")
 
 	// Case 5
 	t.Setenv("TB_NDJSON", "true")
 
 	r = tinybird.Request{
-		NewLineDelimitedJSON: false,
+		Format: tinybird.JSON,
 		Pipe: tinybird.Pipe{
 			Name: "test",
 		},
 	}
 
-	assert.Equal(t, r.Format(), "json")
+	assert.Equal(t, r.GetFormat(), "ndjson")
 }

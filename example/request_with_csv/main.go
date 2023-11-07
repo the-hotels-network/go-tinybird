@@ -45,7 +45,7 @@ func main() {
 				Token: os.Getenv("TB_TOKEN"),
 			},
 		},
-		Format: tinybird.NDJSON,
+		Format: tinybird.CSV,
 	}
 
 	err := req.Execute()
@@ -58,5 +58,5 @@ func main() {
 	fmt.Println("Status code:", res.Status)
 	fmt.Println("Elapsed time:", req.Elapsed)
 	fmt.Println("Error:", res.Error)
-	fmt.Println("Data:", res.Data)
+	fmt.Println("Data:", res.Body)
 }

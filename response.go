@@ -21,7 +21,7 @@ type Response struct {
 	RowsBeforeLimitAtLeast uint          `json:"rows_before_limit_at_least,omitempty"` // RowsBeforeLimitAtLeast is part a tinybird response.
 	Statistics             Statistics    `json:"statistics,omitempty"`                 // Statistics is part a tinybird response.
 	Status                 int           // Status is a HTTP status code, ej: 200, 400, 500 etc...
-	NewLineDelimitedJSON   bool          // Save setting for NewLine-Delimited JSON.
+	Format                 string        // Save format setting.
 }
 
 // Generic row structure to allow any field with any type.
@@ -41,12 +41,32 @@ type Statistics struct {
 }
 
 // Convert response body to struct.
-func (r *Response) Decode() error {
-	if r.NewLineDelimitedJSON {
-		return r.NDJSON()
+func (r *Response) Decode() (err error) {
+	switch r.Format {
+	case CSV:
+		err = r.CSV()
+	case NDJSON:
+		err = r.NDJSON()
+	default:
+		err = r.JSON()
 	}
 
-	return r.JSON()
+	return err
+}
+
+// Convert body to CSV.
+func (r *Response) CSV() error {
+	if r.Raw == nil {
+		return errors.New("Raw is empty")
+	}
+
+	body, err := io.ReadAll(r.Raw)
+	if err != nil {
+		return err
+	}
+	r.Body = string(body)
+
+	return nil
 }
 
 // Convert body to NDJSON.

@@ -76,7 +76,7 @@ func TestJSON(t *testing.T) {
 
 func TestResponseNDJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.NewLineDelimitedJSON = true
+	res.Format = tinybird.NDJSON
 	res.Raw = io.NopCloser(
 		strings.NewReader(`{"ulid":"01H3HT0D3QG3CQRMH1SB0KKPXT","value1":12345,"value2":true,"value3":12.34}
 {"ulid":"01H3HT1JB0B12QTGKH2K599B5K","value1":6543,"value2":null,"value3":99.112}`),
@@ -126,7 +126,7 @@ func TestRawIsEmpty(t *testing.T) {
 
 func TestErrorOnDecodeNDJSON(t *testing.T) {
 	res := tinybird.Response{}
-	res.NewLineDelimitedJSON = true
+	res.Format = tinybird.NDJSON
 	res.Raw = io.NopCloser(strings.NewReader(`{no-ndjson :(`))
 
 	err := res.Decode()
