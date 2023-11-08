@@ -11,16 +11,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	Format string = "json"
+	JSON          = "json"
+	NDJSON        = "ndjson"
+	CSV           = "csv"
+)
+
 // Basic request struct.
 type Request struct {
-	Elapsed              Duration            // Elapsed time of client request.
-	Error                error               // Error on client request.
-	Method               string              // Define HTTP method.
-	Pipe                 Pipe                // Pipe details.
-	Response             Response            // Response data.
-	NewLineDelimitedJSON bool                // Enable NewLine-Delimited JSON.
-	Before               func(*Request) bool // Run before execute request.
-	After                func(*Request)      // Run after execute request.
+	Elapsed  Duration            // Elapsed time of client request.
+	Error    error               // Error on client request.
+	Method   string              // Define HTTP method.
+	Pipe     Pipe                // Pipe details.
+	Response Response            // Response data.
+	Format   string              // Return format.
+	Before   func(*Request) bool // Run before execute request.
+	After    func(*Request)      // Run after execute request.
 }
 
 // Custom HTTP client for this module.
@@ -97,7 +104,7 @@ func (r *Request) newRequest() (*http.Request, error) {
 func (r *Request) readBody(resp *http.Response) (err error) {
 	defer resp.Body.Close()
 
-	r.Response.NewLineDelimitedJSON = r.NewLineDelimitedJSON
+	r.Response.Format = r.Format
 	r.Response.Status = resp.StatusCode
 	r.Response.Raw = resp.Body
 	err = r.Response.Decode()
@@ -124,25 +131,21 @@ func (r *Request) URL() string {
 		"%s/%s.%s",
 		baseUrl,
 		r.Pipe.Name,
-		r.Format(),
+		r.GetFormat(),
 	)
 }
 
 // Verify the variable NewLineDelimitedJSON  value to return json or ndjson.
-func (r *Request) Format() string {
-	if r.NewLineDelimitedJSON {
-		return "ndjson"
-	}
-
+func (r *Request) GetFormat() string {
 	if env.GetBool("TB_NDJSON", false) {
-		if !r.NewLineDelimitedJSON {
-			return "json"
-		}
-
 		return "ndjson"
 	}
 
-	return "json"
+	if r.Format == "" {
+		r.Format = JSON
+	}
+
+	return r.Format
 }
 
 // Return concatened URL and Query String to generate a URI.
