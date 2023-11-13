@@ -99,61 +99,75 @@ func TestRequestWithRequestParamInspect(t *testing.T) {
 	assert.Equal(t, res.Status, http.StatusOK)
 }
 
-func TestNDJSON(t *testing.T) {
-	r := tinybird.Request{}
-
-	// Case 1
-	r = tinybird.Request{
-		Pipe: tinybird.Pipe{
-			Name: "test",
+func TestGetFormat(t *testing.T) {
+	tests := []struct {
+		name           string
+		format         string
+		envTB_NDJSON   string
+		expectedFormat string
+	}{
+		{
+			"format empty & TB_NDJSON=false",
+			"",
+			"false",
+			"json",
+		},
+		{
+			"format empty & TB_NDJSON=true",
+			"",
+			"true",
+			"ndjson",
+		},
+		{
+			"format=json & TB_NDJSON=false",
+			"json",
+			"false",
+			"json",
+		},
+		{
+			"format=json & TB_NDJSON=true",
+			"json",
+			"true",
+			"json",
+		},
+		{
+			"format=ndjson & TB_NDJSON=false",
+			"ndjson",
+			"false",
+			"ndjson",
+		},
+		{
+			"format=ndjson & TB_NDJSON=true",
+			"ndjson",
+			"true",
+			"ndjson",
+		},
+		{
+			"format=csv & TB_NDJSON=false",
+			"csv",
+			"false",
+			"csv",
+		},
+		{
+			"format=csv & TB_NDJSON=true",
+			"csv",
+			"true",
+			"csv",
 		},
 	}
 
-	assert.Equal(t, r.GetFormat(), "json")
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("TB_NDJSON", tc.envTB_NDJSON)
 
-	// Case 2
-	t.Setenv("TB_NDJSON", "true")
+			r := tinybird.Request{
+				Format: tc.format,
+				Pipe: tinybird.Pipe{
+					Name: "test",
+				},
+			}
 
-	r = tinybird.Request{
-		Pipe: tinybird.Pipe{
-			Name: "test",
-		},
+			assert.Equal(t, tc.expectedFormat, r.GetFormat())
+		})
 	}
-
-	assert.Equal(t, r.GetFormat(), "ndjson")
-
-	// Case 3
-	t.Setenv("TB_NDJSON", "false")
-
-	r = tinybird.Request{
-		Pipe: tinybird.Pipe{
-			Name: "test",
-		},
-	}
-
-	assert.Equal(t, r.GetFormat(), "json")
-
-	// Case 4
-	t.Setenv("TB_NDJSON", "false")
-
-	r = tinybird.Request{
-		Format: tinybird.JSON,
-		Pipe: tinybird.Pipe{
-			Name: "test",
-		},
-	}
-
-	assert.Equal(t, r.GetFormat(), "json")
-
-	// Case 5
-	t.Setenv("TB_NDJSON", "true")
-
-	r = tinybird.Request{
-		Format: tinybird.JSON,
-		Pipe: tinybird.Pipe{
-			Name: "test",
-		},
-	}
-
-	assert.Equal(t, r.GetFormat(), "ndjson")
 }

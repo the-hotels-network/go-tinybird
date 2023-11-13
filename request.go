@@ -135,17 +135,17 @@ func (r *Request) URL() string {
 	)
 }
 
-// Verify the variable NewLineDelimitedJSON  value to return json or ndjson.
+// Verify the variable Format value to return json, ndjson or csv.
 func (r *Request) GetFormat() string {
+	if r.Format == JSON || r.Format == NDJSON || r.Format == CSV {
+		return r.Format
+	}
+
 	if env.GetBool("TB_NDJSON", false) {
-		return "ndjson"
+		return NDJSON
 	}
 
-	if r.Format == "" {
-		r.Format = JSON
-	}
-
-	return r.Format
+	return JSON
 }
 
 // Return concatened URL and Query String to generate a URI.
