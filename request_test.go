@@ -68,6 +68,7 @@ func TestRequestWithCustomURL(t *testing.T) {
 func TestRequestWithRequestParamInspect(t *testing.T) {
 	params := url.Values{}
 	params.Add("start_date", "2023-05-01")
+	params.Add("request_at", "2023-05-01 23:59:59")
 	params.Add("end_date", "2023-05-31")
 	params.Add("currency", "EUR")
 
@@ -87,6 +88,7 @@ func TestRequestWithRequestParamInspect(t *testing.T) {
 		`{"data":[{"Col1": "1", "Col2": 2}],"rows":1,"statistics":{"elapsed":0.00091042,"rows_read": 4,"bytes_read": 296}}`,
 		func(r *http.Request) {
 			assert.Contains(t, r.URL.String(), "start_date=2023-05-01")
+			assert.Contains(t, r.URL.String(), "request_at=2023-05-01+23%3A59%3A5")
 			assert.Contains(t, r.URL.String(), "end_date=2023-05-31")
 			assert.Contains(t, r.URL.String(), "currency=EUR")
 		},
