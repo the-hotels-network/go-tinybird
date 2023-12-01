@@ -29,5 +29,5 @@ func (p *Pipe) GetParameters() string {
 		}
 	}
 
-	return p.Parameters.Encode()
+	return strings.Replace(p.Parameters.Encode(), "+", "%20", -1)
 }
