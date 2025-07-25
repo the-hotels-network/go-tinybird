@@ -106,6 +106,7 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 
 	r.Response.Format = r.Format
 	r.Response.Status = resp.StatusCode
+	r.Response.Header = resp.Header
 	r.Response.Raw = resp.Body
 	err = r.Response.Decode()
 

@@ -2,6 +2,7 @@ package tinybird_test
 
 import (
 	"io"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -132,4 +133,26 @@ func TestErrorOnDecodeNDJSON(t *testing.T) {
 	err := res.Decode()
 
 	assert.NotNil(t, err)
+}
+
+func TestResponseHeader(t *testing.T) {
+	// Create a mock HTTP response
+	mockHeader := http.Header{
+		"Content-Type":    {"application/json"},
+		"X-Custom-Header": {"CustomValue"},
+	}
+	mockResponse := &http.Response{
+		Header: mockHeader,
+	}
+
+	// Create a Response object and assign the mock headers
+	response := tinybird.Response{}
+	response.Header = mockResponse.Header
+
+	// Validate Headers using testify assertions
+	assert.Equal(t, len(mockHeader), len(response.Header), "Header count should match")
+
+	for key, values := range mockHeader {
+		assert.ElementsMatch(t, values, response.Header.Values(key), "Header values should match for key: %s", key)
+	}
 }
