@@ -9,6 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetParametersEmpty(t *testing.T) {
+	p := tinybird.Pipe{
+		Parameters: url.Values{},
+	}
+
+	assert.Equal(t, p.GetParameters(), "")
+}
+
 func TestGetParameters(t *testing.T) {
 	params := url.Values{}
 	params.Add("start_date", "2022-05-01")
@@ -29,4 +37,8 @@ func TestGetParameters(t *testing.T) {
 	}
 
 	assert.Equal(t, p.GetParameters(), "end_date=2022-05-30&id=1%2C2%2C3%2C4&request_at=2023-05-01%2023%3A59%3A59&start_date=2022-05-01")
+}
+
+func TestGetURI(t *testing.T) {
+
 }

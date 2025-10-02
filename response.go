@@ -24,6 +24,8 @@ type Response struct {
 	Status                 int           // Status is a HTTP status code, ej: 200, 400, 500 etc...
 	Header                 http.Header   // Headers contains the HTTP response headers returned by the server
 	Format                 string        // Save format setting.
+	SuccessfulRows         int           `json:"successful_rows"`
+	QuarantinedRows        int           `json:"quarantined_rows"`
 }
 
 // Generic row structure to allow any field with any type.
