@@ -1,8 +1,18 @@
 package tinybird
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
+
+	"github.com/the-hotels-network/go-tinybird/internal/env"
+)
+
+const (
+	Format string = "json"
+	JSON          = "json"
+	NDJSON        = "ndjson"
+	CSV           = "csv"
 )
 
 // Pipe is a object on tinybird, contains one or more SQL queries (Nodes) that
@@ -19,6 +29,8 @@ type Pipe struct {
 	// Is an area that contains a set of Tinybird resources, including Pipes,
 	// Nodes, APIs, Data Sources & Auth Tokens. Define by user.
 	Workspace Workspace
+	// Return format.
+	Format string
 }
 
 func (p *Pipe) GetParameters() string {
@@ -30,4 +42,49 @@ func (p *Pipe) GetParameters() string {
 	}
 
 	return strings.Replace(p.Parameters.Encode(), "+", "%20", -1)
+}
+
+// Build and return the pipe URL.
+func (p Pipe) GetURL() string {
+	baseUrl := URL_BASE
+
+	if p.URL != "" {
+		baseUrl = p.URL
+	}
+
+	return baseUrl
+}
+
+func (p Pipe) GetURI() string {
+	qs, _ := url.QueryUnescape(p.GetParameters())
+
+	if qs == "" {
+		return fmt.Sprintf(
+			"%s/v0/pipes/%s.%s",
+			p.GetURL(),
+			p.Name,
+			p.GetFormat(),
+		)
+	}
+
+	return fmt.Sprintf(
+		"%s/v0/pipes/%s.%s?%s",
+		p.GetURL(),
+		p.Name,
+		p.GetFormat(),
+		qs,
+	)
+}
+
+// Verify the variable Format value to return json, ndjson or csv.
+func (p Pipe) GetFormat() string {
+	if p.Format == JSON || p.Format == NDJSON || p.Format == CSV {
+		return p.Format
+	}
+
+	if env.GetBool("TB_NDJSON", false) {
+		return NDJSON
+	}
+
+	return JSON
 }

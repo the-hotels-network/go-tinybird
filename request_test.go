@@ -17,7 +17,8 @@ func TestRequest(t *testing.T) {
 			Name:  "ep_test",
 			Alias: "test",
 			Workspace: tinybird.Workspace{
-				Name: "test",
+				Name:  "test",
+				Token: "testoken",
 			},
 		},
 	}
@@ -30,7 +31,8 @@ func TestRequest(t *testing.T) {
 	req.Execute()
 	res := req.Response
 
-	assert.Equal(t, req.URL(), "https://api.tinybird.co/v0/pipes/ep_test.json")
+	assert.Equal(t, req.URL(), "https://api.tinybird.co")
+	assert.Equal(t, req.URI(), "https://api.tinybird.co/v0/pipes/ep_test.json")
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
@@ -43,9 +45,10 @@ func TestRequestWithCustomURL(t *testing.T) {
 		Pipe: tinybird.Pipe{
 			Name:  "ep_test",
 			Alias: "test",
-			URL:   "https://api.us-east.tinybird.co/v0/pipes",
+			URL:   "https://api.us-east.tinybird.co",
 			Workspace: tinybird.Workspace{
-				Name: "test",
+				Name:  "test",
+				Token: "testoken",
 			},
 		},
 	}
@@ -58,7 +61,8 @@ func TestRequestWithCustomURL(t *testing.T) {
 	req.Execute()
 	res := req.Response
 
-	assert.Equal(t, req.URL(), "https://api.us-east.tinybird.co/v0/pipes/ep_test.json")
+	assert.Equal(t, req.URL(), "https://api.us-east.tinybird.co")
+	assert.Equal(t, req.URI(), "https://api.us-east.tinybird.co/v0/pipes/ep_test.json")
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
@@ -78,7 +82,8 @@ func TestRequestWithRequestParamInspect(t *testing.T) {
 			Name:       "test",
 			Parameters: params,
 			Workspace: tinybird.Workspace{
-				Name: "test",
+				Name:  "test",
+				Token: "testoken",
 			},
 		},
 	}
@@ -163,13 +168,41 @@ func TestGetFormat(t *testing.T) {
 			t.Setenv("TB_NDJSON", tc.envTB_NDJSON)
 
 			r := tinybird.Request{
-				Format: tc.format,
 				Pipe: tinybird.Pipe{
-					Name: "test",
+					Format: tc.format,
+					Name:   "test",
 				},
 			}
 
-			assert.Equal(t, tc.expectedFormat, r.GetFormat())
+			assert.Equal(t, tc.expectedFormat, r.Pipe.GetFormat())
 		})
 	}
+}
+
+func TestRequestEvent(t *testing.T) {
+	req := tinybird.Request{
+		Method: http.MethodPost,
+		Event: tinybird.Event{
+			Datasource: "ds_test",
+			Workspace: tinybird.Workspace{
+				Name:  "test",
+				Token: "testoken",
+			},
+		},
+	}
+
+	tinybird.MockResponse(
+		http.StatusOK,
+		`{"successful_rows":1,"quarantined_rows":0}`,
+	)
+
+	req.Execute()
+	res := req.Response
+
+	assert.Equal(t, req.URL(), "https://api.tinybird.co")
+	assert.Equal(t, req.URI(), "https://api.tinybird.co/v0/events?name=ds_test")
+	assert.Nil(t, req.Error)
+	assert.Equal(t, res.Status, http.StatusOK)
+	assert.Equal(t, res.Rows, uint(0))
+	assert.Equal(t, res.Data, []tinybird.Row(nil))
 }

@@ -1,33 +1,24 @@
 package tinybird
 
 import (
-	"fmt"
+	"bytes"
 	"net/http"
-	"net/url"
 	"time"
-
-	"github.com/the-hotels-network/go-tinybird/internal/env"
 
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	Format string = "json"
-	JSON          = "json"
-	NDJSON        = "ndjson"
-	CSV           = "csv"
-)
-
 // Basic request struct.
 type Request struct {
+	After    func(*Request)      // Run after execute request.
+	Before   func(*Request) bool // Run before execute request.
+	Data     []byte              // Data to send.
 	Elapsed  Duration            // Elapsed time of client request.
 	Error    error               // Error on client request.
+	Event    Event               // Send event to data source.
 	Method   string              // Define HTTP method.
 	Pipe     Pipe                // Pipe details.
 	Response Response            // Response data.
-	Format   string              // Return format.
-	Before   func(*Request) bool // Run before execute request.
-	After    func(*Request)      // Run after execute request.
 }
 
 // Custom HTTP client for this module.
@@ -83,7 +74,7 @@ func (r *Request) Execute() error {
 
 // Create new request.
 func (r *Request) newRequest() (*http.Request, error) {
-	req, err := http.NewRequest(r.Method, r.URL(), nil)
+	req, err := http.NewRequest(r.Method, r.URI(), bytes.NewBuffer(r.Data))
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +85,11 @@ func (r *Request) newRequest() (*http.Request, error) {
 	}).Debug("tinybird")
 
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", r.Pipe.Workspace.Token))
-	req.URL.RawQuery = r.Pipe.GetParameters()
+	req.Header.Add("Authorization", r.Token())
+
+	if r.Pipe.Workspace.IsSet() {
+		req.URL.RawQuery = r.Pipe.GetParameters()
+	}
 
 	return req, nil
 }
@@ -104,7 +98,7 @@ func (r *Request) newRequest() (*http.Request, error) {
 func (r *Request) readBody(resp *http.Response) (err error) {
 	defer resp.Body.Close()
 
-	r.Response.Format = r.Format
+	r.Response.Format = r.Format()
 	r.Response.Status = resp.StatusCode
 	r.Response.Header = resp.Header
 	r.Response.Raw = resp.Body
@@ -119,38 +113,40 @@ func (r *Request) readBody(resp *http.Response) (err error) {
 	return err
 }
 
-// Build and return the pipe URL.
-func (r *Request) URL() string {
-	var baseUrl string
-	if r.Pipe.URL != "" {
-		baseUrl = r.Pipe.URL
-	} else {
-		baseUrl = URL_BASE
+func (r *Request) URL() (out string) {
+	if r.Pipe.Workspace.IsSet() {
+		out = r.Pipe.GetURL()
+	} else if r.Event.Workspace.IsSet() {
+		out = r.Event.GetURL()
 	}
 
-	return fmt.Sprintf(
-		"%s/%s.%s",
-		baseUrl,
-		r.Pipe.Name,
-		r.GetFormat(),
-	)
+	return out
 }
 
-// Verify the variable Format value to return json, ndjson or csv.
-func (r *Request) GetFormat() string {
-	if r.Format == JSON || r.Format == NDJSON || r.Format == CSV {
-		return r.Format
+func (r *Request) Token() (out string) {
+	if r.Pipe.Workspace.IsSet() {
+		out = r.Pipe.Workspace.GetToken()
+	} else if r.Event.Workspace.IsSet() {
+		out = r.Event.Workspace.GetToken()
 	}
 
-	if env.GetBool("TB_NDJSON", false) {
-		return NDJSON
-	}
-
-	return JSON
+	return out
 }
 
-// Return concatened URL and Query String to generate a URI.
-func (r *Request) URI() string {
-	qs, _ := url.QueryUnescape(r.Pipe.GetParameters())
-	return fmt.Sprintf("%s?%s", r.URL(), qs)
+func (r *Request) URI() (out string) {
+	if r.Pipe.Workspace.IsSet() {
+		out = r.Pipe.GetURI()
+	} else if r.Event.Workspace.IsSet() {
+		out = r.Event.GetURI()
+	}
+
+	return out
+}
+
+func (r *Request) Format() (out string) {
+	if r.Pipe.Workspace.IsSet() {
+		out = r.Pipe.GetFormat()
+	}
+
+	return out
 }
