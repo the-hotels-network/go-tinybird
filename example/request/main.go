@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 
 	"github.com/the-hotels-network/go-tinybird"
 )
@@ -13,33 +12,36 @@ func main() {
 	params := url.Values{}
 	params.Add("start_date", "2023-05-01")
 	params.Add("end_date", "2023-05-29")
-	params.Add("property_id", "1011163")
-	params.Add("property_id", "1011832")
-	params.Add("property_id", "1011846")
-	params.Add("property_id", "1011847")
+	params.Add("user_id", "1011")
+	params.Add("user_id", "1012")
 
 	req := tinybird.Request{
 		Method: http.MethodGet,
 		Pipe: tinybird.Pipe{
-			Name:       "ep_quantum_disparities",
+			Name:       "ep_users",
 			Parameters: params,
 			Workspace: tinybird.Workspace{
-				Name:  "quantum",
-				Token: os.Getenv("TB_TOKEN"),
+				Name:  "example",
+				Token: "testoken",
 			},
 		},
 	}
 
-	err := req.Execute()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	tinybird.MockResponseFunc(
+		http.StatusOK,
+		func(url string) string {
+			return `{"id": "01H3EHWCP9TF5GSHYBVFXSZX9M", "type": "user", "min": 0, "currency": "EUR"}`
+		},
+		nil,
+	)
 
+	req.Execute()
 	res := req.Response
+
 	fmt.Println("Status code:", res.Status)
 	fmt.Println("Elapsed time:", req.Elapsed)
 	fmt.Println("Error:", res.Error)
-	fmt.Println("Data:", res.Data)
-	fmt.Println("URL:", req.URI())
+	fmt.Println("Body:", res.Body)
+	fmt.Println("URL:", req.URL())
+	fmt.Println("URI:", req.URI())
 }

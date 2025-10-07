@@ -26,6 +26,7 @@ func TestRequest(t *testing.T) {
 	tinybird.MockResponse(
 		http.StatusOK,
 		`{"data":[{"Col1": "1", "Col2": 2}],"rows":1,"statistics":{"elapsed":0.00091042,"rows_read": 4,"bytes_read": 296}}`,
+		nil,
 	)
 
 	req.Execute()
@@ -56,6 +57,7 @@ func TestRequestWithCustomURL(t *testing.T) {
 	tinybird.MockResponse(
 		http.StatusOK,
 		`{"data":[{"Col1": "1", "Col2": 2}],"rows":1,"statistics":{"elapsed":0.00091042,"rows_read": 4,"bytes_read": 296}}`,
+		nil,
 	)
 
 	req.Execute()
@@ -88,7 +90,7 @@ func TestRequestWithRequestParamInspect(t *testing.T) {
 		},
 	}
 
-	tinybird.MockResponseWithRequestInspect(
+	tinybird.MockResponse(
 		http.StatusOK,
 		`{"data":[{"Col1": "1", "Col2": 2}],"rows":1,"statistics":{"elapsed":0.00091042,"rows_read": 4,"bytes_read": 296}}`,
 		func(r *http.Request) {
@@ -194,6 +196,7 @@ func TestRequestEvent(t *testing.T) {
 	tinybird.MockResponse(
 		http.StatusOK,
 		`{"successful_rows":1,"quarantined_rows":0}`,
+		nil,
 	)
 
 	req.Execute()

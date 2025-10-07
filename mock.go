@@ -6,31 +6,43 @@ import (
 	"net/http"
 )
 
-type MockRoundTripper func(r *http.Request) *http.Response
-
-func InjectHTTPClient(httpClient *http.Client) {
-	Client = httpClient
-}
+type MockRoundTripper func(r *http.Request) (*http.Response, error)
 
 func (f MockRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
-	return f(r), nil
+	return f(r)
 }
 
-func MockResponse(statusCode int, body string) {
-	MockResponseWithRequestInspect(statusCode, body, nil)
-}
-
-func MockResponseWithRequestInspect(statusCode int, body string, requestInspect func(r *http.Request)) {
-	InjectHTTPClient(&http.Client{
-		Transport: MockRoundTripper(func(r *http.Request) *http.Response {
+func MockResponse(statusCode int, body string, requestInspect func(r *http.Request)) {
+	Client = &http.Client{
+		Transport: MockRoundTripper(func(r *http.Request) (*http.Response, error) {
 			if requestInspect != nil {
 				requestInspect(r)
 			}
 
 			return &http.Response{
-				StatusCode: statusCode,
-				Body:       io.NopCloser(bytes.NewReader([]byte(body))),
-			}
+				StatusCode:    statusCode,
+				Body:          io.NopCloser(bytes.NewReader([]byte(body))),
+				ContentLength: int64(len([]byte(body))),
+				Request:       r,
+			}, nil
 		}),
-	})
+	}
+}
+
+func MockResponseFunc(statusCode int,	bodyFn func(string) string,	requestInspect func(r *http.Request)) {
+	Client = &http.Client{
+		Transport: MockRoundTripper(func(r *http.Request) (*http.Response, error) {
+			if requestInspect != nil {
+				requestInspect(r)
+			}
+
+			body := bodyFn(r.URL.String())
+			return &http.Response{
+				StatusCode:    statusCode,
+				Body:          io.NopCloser(bytes.NewReader([]byte(body))),
+				ContentLength: int64(len([]byte(body))),
+				Request:       r,
+			}, nil
+		}),
+	}
 }
