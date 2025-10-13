@@ -36,7 +36,7 @@ func TestRequest(t *testing.T) {
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
-	assert.Equal(t, res.Data, []tinybird.Row{{"Col1": "1", "Col2": float64(2)}})
+	assert.Equal(t, res.Data, tinybird.Data{{"Col1": "1", "Col2": float64(2)}})
 }
 
 func TestRequestWithCustomURL(t *testing.T) {
@@ -66,7 +66,7 @@ func TestRequestWithCustomURL(t *testing.T) {
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(1))
-	assert.Equal(t, res.Data, []tinybird.Row{{"Col1": "1", "Col2": float64(2)}})
+	assert.Equal(t, res.Data, tinybird.Data{{"Col1": "1", "Col2": float64(2)}})
 }
 
 func TestRequestWithRequestParamInspect(t *testing.T) {
@@ -204,5 +204,5 @@ func TestRequestEvent(t *testing.T) {
 	assert.Nil(t, req.Error)
 	assert.Equal(t, res.Status, http.StatusOK)
 	assert.Equal(t, res.Rows, uint(0))
-	assert.Equal(t, res.Data, []tinybird.Row(nil))
+	assert.Equal(t, res.Data, tinybird.Data(nil))
 }

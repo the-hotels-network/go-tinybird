@@ -14,7 +14,7 @@ type Response struct {
 	Cached                 bool          // Flag control to use to determine the origin this response.
 	Raw                    io.ReadCloser // Raw is the original data from response.
 	Body                   string        // Body in string format, same a Data but in struct format and Raw in original format.
-	Data                   []Row         `json:"data,omitempty"`                       // Data is part a tinybird response.
+	Data                   Data          `json:"data,omitempty"`                       // Data is part a tinybird response.
 	Documentation          string        `json:"documentation,omitempty"`              // Documentation is part a tinybird response.
 	Error                  string        `json:"error,omitempty"`                      // Error is part a tinybird response.
 	Meta                   []Meta        `json:"meta,omitempty"`                       // Meta is part a tinybird response.
@@ -27,9 +27,6 @@ type Response struct {
 	SuccessfulRows         int           `json:"successful_rows"`
 	QuarantinedRows        int           `json:"quarantined_rows"`
 }
-
-// Generic row structure to allow any field with any type.
-type Row map[string]any
 
 // Specific field with data type.
 type Meta struct {
