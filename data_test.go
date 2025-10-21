@@ -1,31 +1,33 @@
-package tinybird
+package tinybird_test
 
 import (
 	"testing"
+
+	"github.com/the-hotels-network/go-tinybird"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFirst_ReturnsFirstRow(t *testing.T) {
-	d := Data{
+	d := tinybird.Data{
 		{"id": 1, "name": "first"},
 		{"id": 2, "name": "second"},
 	}
 
 	first := d.First()
-	assert.Equal(t, Row{"id": 1, "name": "first"}, first)
+	assert.Equal(t, tinybird.Row{"id": 1, "name": "first"}, first)
 }
 
 func TestFirst_PanicsOnEmptyData(t *testing.T) {
-	var d Data
-	assert.Panics(t, func() { _ = d.First() })
+	var d tinybird.Data
+	assert.Equal(t, d.First(), tinybird.Row{})
 
-	empty := Data{}
-	assert.Panics(t, func() { _ = empty.First() })
+	empty := tinybird.Data{}
+	assert.Equal(t, empty.First(), tinybird.Row{})
 }
 
 func TestFetchOne_ReturnsValueFromFirstRow(t *testing.T) {
-	d := Data{
+	d := tinybird.Data{
 		{"foo": "bar", "n": 42},
 		{"foo": "baz"},
 	}
@@ -38,7 +40,7 @@ func TestFetchOne_ReturnsValueFromFirstRow(t *testing.T) {
 }
 
 func TestFetchOne_ReturnsNilWhenKeyMissing(t *testing.T) {
-	d := Data{
+	d := tinybird.Data{
 		{"foo": "bar"},
 	}
 
@@ -47,12 +49,12 @@ func TestFetchOne_ReturnsNilWhenKeyMissing(t *testing.T) {
 }
 
 func TestFetchOne_PanicsOnEmptyData(t *testing.T) {
-	var d Data
-	assert.Panics(t, func() { _ = d.FetchOne("foo") })
+	var d tinybird.Data
+	assert.Nil(t, d.FetchOne("foo"))
 }
 
 func TestToString_JSONRoundTripEq(t *testing.T) {
-	d := Data{
+	d := tinybird.Data{
 		{"a": 1, "b": "x"},
 		{"a": 2, "c": true},
 	}
@@ -62,8 +64,8 @@ func TestToString_JSONRoundTripEq(t *testing.T) {
 }
 
 func TestToString_OnNilAndEmpty(t *testing.T) {
-	var dNil Data
-	dEmpty := Data{}
+	var dNil tinybird.Data
+	dEmpty := tinybird.Data{}
 
 	assert.Equal(t, "null", dNil.ToString())
 	assert.Equal(t, "[]", dEmpty.ToString())

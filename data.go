@@ -9,12 +9,19 @@ type Row map[string]any
 // Data represents a collection (slice) of rows returned from a query or dataset.
 type Data []Row
 
+// Count the items.
+func (d Data) Len() int {
+	return len(d)
+}
+
 // First returns the first Row in the Data slice.
 // It assumes the slice is not empty.
-func (d Data) First() (out Row) {
-	out = d[0]
+func (d Data) First() Row {
+	if d.Len() > 0 {
+		return d[0]
+	}
 
-	return out
+	return Row{}
 }
 
 // FetchOne retrieves the value of a specific field from the first Row
