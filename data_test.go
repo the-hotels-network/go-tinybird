@@ -70,3 +70,44 @@ func TestToString_OnNilAndEmpty(t *testing.T) {
 	assert.Equal(t, "null", dNil.ToString())
 	assert.Equal(t, "[]", dEmpty.ToString())
 }
+
+func TestGet(t *testing.T) {
+	d := tinybird.Data{
+		{"a": nil},
+		{"b": tinybird.Row{"a": 1}},
+		{"b": tinybird.Row{"b": 2}},
+		{"b": tinybird.Row{"c": 3}},
+		{"c": tinybird.Row{"a": 4}},
+		{"d": tinybird.Row{"a": 5}},
+		{"d": tinybird.Row{"b": tinybird.Row{"a": 6}}},
+		{"f": 7},
+	}
+
+	assert.Nil(t, d.Get(""))
+	assert.Nil(t, d.Get("a"))
+	assert.Nil(t, d.Get("e"))
+	assert.Equal(t, 7, d.Get("f"))
+	assert.Equal(t, 4, d.Get("c.a"))
+	assert.Equal(t, 6, d.Get("d.b.a"))
+	assert.Equal(t, tinybird.Row{"a": 4}, d.Get("c"))
+}
+
+func TestSet(t *testing.T) {
+	d := tinybird.Data{
+		{"a": nil},
+		{"b": tinybird.Row{"a": 1}},
+		{"b": tinybird.Row{"b": 2}},
+		{"b": tinybird.Row{"c": 3}},
+		{"c": tinybird.Row{"a": 4}},
+		{"d": tinybird.Row{"a": 5}},
+		{"d": tinybird.Row{"b": tinybird.Row{"a": 6}}},
+		{"f": 7},
+	}
+
+	assert.Nil(t, d.Set("a", 0))
+	assert.Equal(t, 0, d.Get("a"))
+	assert.Nil(t, d.Set("b.b", 22))
+	assert.Equal(t, 22, d.Get("b.b"))
+	assert.Nil(t, d.Set("d.b.a", 66))
+	assert.Equal(t, 66, d.Get("d.b.a"))
+}
