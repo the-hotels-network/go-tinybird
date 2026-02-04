@@ -7,6 +7,7 @@ A [Tinybird](https://www.tinybird.co/) module for Go. Why need this module? It p
 - Lightweight and fast.
 - Native Go implementation. No C-bindings, just pure Go
 - Connection pooling for HTTP.
+- Read and write values in nested JSON structures using path-based access.
 - Test your code with mocks.
 - Allow JSON, [NDJSON](http://ndjson.org/) and CSV between tinybird and this module.
 - Parallelize HTTP requests.
