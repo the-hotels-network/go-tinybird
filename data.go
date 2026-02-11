@@ -72,13 +72,20 @@ func get(row Row, parts []string) (any, bool) {
 	var current any = row
 
 	for _, part := range parts {
-		r, ok := current.(Row)
-		if !ok {
-			return nil, false
-		}
-
-		current, ok = r[part]
-		if !ok {
+		switch v := current.(type) {
+		case Row:
+			val, ok := v[part]
+			if !ok {
+				return nil, false
+			}
+			current = val
+		case map[string]any:
+			val, ok := v[part]
+			if !ok {
+				return nil, false
+			}
+			current = val
+		default:
 			return nil, false
 		}
 	}
@@ -97,42 +104,46 @@ func (d *Data) Set(in string, value any) error {
 		return errors.New("nil Data")
 	}
 
+	if len(*d) == 0 {
+		return errors.New("empty Data")
+	}
+
 	parts := strings.Split(in, ".")
 
 	for i := range *d {
-		row := (*d)[i]
-
-		if _, ok := get(row, parts[:len(parts)-1]); ok {
-			return set(row, parts, value)
+		if err := set((*d)[i], parts, value); err != nil {
+			return err
 		}
 	}
 
-	return errors.New("path not found")
+	return nil
 }
 
 func set(row Row, parts []string, value any) error {
 	current := row
 
-	for i, p := range parts {
-		if i == len(parts)-1 {
-			current[p] = value
+	for index, part := range parts {
+		if index == len(parts)-1 {
+			current[part] = value
 			return nil
 		}
 
-		next, exists := current[p]
+		next, exists := current[part]
 		if !exists {
 			child := Row{}
-			current[p] = child
+			current[part] = child
 			current = child
 			continue
 		}
 
-		child, ok := next.(Row)
-		if !ok {
-			return errors.New("path collision at " + p)
+		switch v := next.(type) {
+		case Row:
+			current = v
+		case map[string]any:
+			current = Row(v)
+		default:
+			return errors.New("path collision at " + part)
 		}
-
-		current = child
 	}
 
 	return nil
