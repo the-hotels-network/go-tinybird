@@ -92,6 +92,45 @@ func TestGet(t *testing.T) {
 	assert.Equal(t, tinybird.Row{"a": 4}, d.Get("c"))
 }
 
+func TestAutoCast(t *testing.T) {
+	tests := []struct {
+		name     string
+		val      any
+		expected any
+	}{
+		// Non-string values pass through unchanged
+		{"nil", nil, nil},
+		{"int", 42, 42},
+		{"float64", float64(3.14), float64(3.14)},
+		{"bool", true, true},
+
+		// Strings that are integers
+		{"string int", "42", int64(42)},
+		{"string negative int", "-999", int64(-999)},
+		{"string big int", "1125523841434490335", int64(1125523841434490335)},
+		{"string zero", "0", int64(0)},
+
+		// Strings that are floats
+		{"string float", "3.14", float64(3.14)},
+		{"string negative float", "-0.5", float64(-0.5)},
+		{"string float with exponent", "1.5e2", float64(150)},
+
+		// Strings that stay as strings
+		{"plain string", "hello", "hello"},
+		{"empty string", "", ""},
+		{"date string", "2022-03-30", "2022-03-30"},
+		{"datetime string", "2022-03-30 14:34:57", "2022-03-30 14:34:57"},
+		{"mixed string", "abc123", "abc123"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tinybird.AutoCast(tt.val)
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}
+
 func TestSet(t *testing.T) {
 	d := tinybird.Data{
 		{"a": nil},
@@ -110,4 +149,22 @@ func TestSet(t *testing.T) {
 	assert.Equal(t, 22, d.Get("b.b"))
 	assert.Nil(t, d.Set("d.b.a", 66))
 	assert.Equal(t, 66, d.Get("d.b.a"))
+}
+
+func TestSetWithAutoCast(t *testing.T) {
+	d := tinybird.Data{
+		{"a": nil},
+	}
+
+	assert.Nil(t, d.SetWithAutoCast("a", "42"))
+	assert.Equal(t, int64(42), d.Get("a"))
+
+	assert.Nil(t, d.SetWithAutoCast("a", "3.14"))
+	assert.Equal(t, float64(3.14), d.Get("a"))
+
+	assert.Nil(t, d.SetWithAutoCast("a", "hello"))
+	assert.Equal(t, "hello", d.Get("a"))
+
+	assert.Nil(t, d.SetWithAutoCast("a", 99))
+	assert.Equal(t, 99, d.Get("a"))
 }
