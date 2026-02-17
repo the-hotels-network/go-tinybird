@@ -3,6 +3,7 @@ package tinybird
 import (
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -147,4 +148,30 @@ func set(row Row, parts []string, value any) error {
 	}
 
 	return nil
+}
+
+// SetWithAutoCast works like Set but applies AutoCast to the value before
+// storing it, converting numeric strings to their int64 or float64 equivalents.
+func (d *Data) SetWithAutoCast(in string, value any) error {
+	return d.Set(in, AutoCast(value))
+}
+
+// AutoCast attempts to infer the real type of a value. If the value is
+// a string it tries to parse it as int64 first, then float64. Non-string
+// values and strings that cannot be parsed are returned unchanged.
+func AutoCast(val any) any {
+	s, ok := val.(string)
+	if !ok {
+		return val
+	}
+
+	if n, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return n
+	}
+
+	if f, err := strconv.ParseFloat(s, 64); err == nil {
+		return f
+	}
+
+	return val
 }
