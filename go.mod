@@ -1,6 +1,6 @@
 module github.com/the-hotels-network/go-tinybird
 
-go 1.27.3
+go 1.27
 
 require (
 	github.com/olivere/ndjson v1.0.1
